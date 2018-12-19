@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/r-tree.js"></script>
+    <script src="js/r-tree-grid.js"></script>
+    <script src="js/r-slider.js"></script>
+    <script src="js/r-donat-chart.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+    <title>Document</title>
+    <style>
+        
+        
+        
+        .container {
+            font-family: arial;
+            float: left;
+            border: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .r-tree-checkbox {
+            color:#999;
+        }
+
+        .r-tree-node.selected > .r-tree-row {
+            background: #a8e3ff;
+        }
+
+        
+
+            .r-tree-row:hover {
+                background: #e0f4fe;
+            }
+
+        .r-tree-node.checked > .r-tree-row .r-tree-checkbox:before {
+            content: "";
+            position: absolute;
+            height: 70%;
+            width: 70%;
+            background: #666;
+            top: 15%;
+            left: 15%;
+        }
+
+        .r-tree-node.checked.leaf > .r-tree-row .r-tree-checkbox:before {
+            content: "";
+            position: absolute;
+            height: 30%;
+            width: 70%;
+            border-style: solid;
+            border-width: 0px 0px 1px 1px;
+            background: none;
+            transform: rotate(-45deg);
+            top: 20%;
+            left: 15%;
+        }
+
+        .r-tree-column.tree {
+            background: #fff;
+            -webkit-user-select: none;
+        }
+
+        .r-tree-cell {
+            padding: 0 6px;
+            text-align: center;
+            background: #fff;
+            position:relative;
+        }
+
+        .textbox {
+            width: 100%;
+            height: 12px;
+            border: none;
+            text-align: center;
+            outline:none;
+        }
+
+            .textbox:focus {
+                border-bottom: 1px solid;
+            }
+
+            .r-tree-cell .r-slider-line{
+    background:#aaa;
+}
+
+.r-tree-cell .r-slider-button{
+    box-shadow: inset 0 0 0 1px #aaa;
+    background:#fff;
+    border-radius:100%;
+}   
+.r-tree-cell .r-slider-number{
+    position: relative;
+    font-size:9px;
+    color:#aaa;
+    height:24px;
+    line-height:24px;
+}
+.circle-progress{
+    color:#0165C9;
+}
+    
+    
+    </style>
+</head>
+<body>
+    <div class="container"></div>
+    <script>
+        var model = [
+                {
+                    template: "item0",
+                    id: "item0",
+                    iconType: "folder",
+                    properties: { weight: "w0", type: "t0" },
+                    date: { start: "96/1/1", end: "97/1/1" },
+                    percent:50,
+                    progress:30,
+                    opened: true,
+                    childs: [
+                        {
+                            template: "item00",
+                            id: 'item00',
+                            iconType: "folder",
+                            properties: { weight: "w00", type: "t00" },
+                            date: { start: "96/1/1", end: "97/1/1" },
+                            percent:50,
+                            progress:30,
+                            opened: true,
+                            childs: [
+                                {
+                                    template: "item000",
+                                    id: 'item000',
+                                    iconType: "folder",
+                                    properties: { weight: "w000", type: "t000" },
+                                    date: { start: "96/1/1", end: "97/1/1" },
+                                    percent:50,
+                                    progress:30,
+                                    opened: true,
+                                    childs: [
+                                    {
+                                        template: "item0000",
+                                        id: "item0000",
+                                        iconType: "file",
+                                        properties: { weight: "w0000", type: "t0000" },
+                                        date: { start: "96/1/1", end: "97/1/1" },
+                                        percent:50,
+                                        progress:30,
+                                        opened: true,
+                                    },
+                                    ]
+                                },
+
+                            ]
+                        },
+                        {
+                            template: "item01",
+                            id: "item01",
+                            iconType: "folder",
+                            properties: { weight: "w01", type: "t01" },
+                            date: { start: "96/1/1", end: "97/1/1" },
+                            percent:50,
+                            progress:80,
+                            opened: true,
+                            childs: [
+                                {
+                                    template: "item010",
+                                    id: "item010",
+                                    iconType: "folder",
+                                    properties: { weight: "w010", type: "t010" },
+                                    date: { start: "96/1/1", end: "97/1/1" },
+                                    percent:50,
+                                    progress:30,
+                                    opened: true,
+                                    childs: [
+                                        {
+                                            template: "item0100",
+                                            id: "item0100",
+                                            iconType: "file",
+                                            properties: { weight: "w0100", type: "t0100" },
+                                            date: { start: "96/1/1", end: "97/1/1" },
+                                            percent:50,
+                                            progress:30,
+                                            opened: true,
+                                            type: "t0100",
+                                        },
+                                        {
+                                            template: "item0101",
+                                            id: "item0101",
+                                            iconType: "file",
+                                            properties: { weight: "w0101", type: "t0101" },
+                                            date: { start: "96/1/1", end: "97/1/1" },
+                                            percent:50,
+                                            progress:30,
+                                            opened: true,
+                                        },
+
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    template: "item1",
+                    id: "item1",
+                    iconType: "folder",
+                    properties: { weight: "w1", type: "t1" },
+                    date: { start: "96/1/1", end: "97/1/1" },
+                    percent:50,
+                    progress:30,
+                    opened: true,
+                    childs: [
+                        {
+                            template: "item10",
+                            id: 'item10',
+                            iconType: "folder",
+                            properties: { weight: "w10", type: "t10" },
+                            date: { start: "96/1/1", end: "97/1/1" },
+                            percent:50,
+                            progress:30,
+                            opened: true,
+                            childs: [
+                                {
+                                    template: "item100",
+                                    id: 'item100',
+                                    iconType: "folder",
+                                    properties: { weight: "w100", type: "t100" },
+                                    date: { start: "96/1/1", end: "97/1/1" },
+                                    percent:50,
+                                    progress:30,
+                                    opened: true,
+                                    childs: [
+                                    {
+                                        template: "item1000",
+                                        id: "item1000",
+                                        iconType: "file",
+                                        properties: { weight: "w1000", type: "t1000" },
+                                        date: { start: "96/1/1", end: "97/1/1" },
+                                        percent:50,
+                                        progress:30,
+                                        opened: true,
+                                    },
+                                    ]
+                                },
+
+                            ]
+                        },
+                        {
+                            template: "item11",
+                            id: "item11",
+                            iconType: "folder",
+                            properties: { weight: "w11", type: "t11" },
+                            date: { start: "96/1/1", end: "97/1/1" },
+                            percent:50,
+                            progress:30,
+                            opened: true,
+                            childs: [
+                                {
+                                    template: "item110",
+                                    id: "item110",
+                                    iconType: "folder",
+                                    properties: { weight: "w110", type: "t110" },
+                                    date: { start: "96/1/1", end: "97/1/1" },
+                                    percent:50,
+                                    progress:30,
+                                    opened: true,
+                                    childs: [
+                                        {
+                                            template: "item1100",
+                                            id: "item1100",
+                                            iconType: "file",
+                                            properties: { weight: "w1100", type: "t1100" },
+                                            date: { start: "96/1/1", end: "97/1/1" },
+                                            percent:50,
+                                            progress:30,
+                                            opened: true,
+                                        },
+                                        {
+                                            template: "item1101",
+                                            id: "item1101",
+                                            iconType: "file",
+                                            properties: { weight: "w1101", type: "t1101" },
+                                            date: { start: "96/1/1", end: "97/1/1" },
+                                            percent:50,
+                                            progress:30,
+                                            opened: true,
+                                        },
+
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+        ];
+        
+        var A = new RTreeGrid({
+            container: ".container",
+            row_height: 36,
+            offset: 12,
+            border_color:"#bbb",
+            border_width:1,
+            model: model,
+            checkable:true,
+            icons: {
+                folder: '<i class="fas fa-folder" style="color:#fac800;"></i>',
+                file: '<i class="fas fa-file" style="color:#a1b5c3;"></i>'
+            },
+            collapseIcons: {
+                open: '<i class="far fa-minus-square"></i>',
+                close: '<i class="far fa-plus-square"></i>'
+            },
+            columns: [
+                { type: "text", className: "weights", field: ["properties", "weight"], rowsClassName: "weight",width:100 },
+                { type: "text", className: "types", field: ["properties", "type"], rowsClassName: "type",width:100 },
+                { type: "textbox", className: "start-dates", field: ["date", "start"], rowsClassName: "start-date",width:100 },
+                { type: "textbox", className: "end-dates", field: ["date", "end"], rowsClassName: "end-date",width:100 },
+                { type: "percent", className: "percents", field: "percent",rowsClassName: "percent",width:150 },
+                { type: "progress", className: "progresses", field: "progress",rowsClassName: "progress",width:36 },
+            ],
+            templates: {
+                text: function (value,container) {
+                    container.html(value)
+                },
+                textbox: function (value,container) {
+                    container.html('<input class="textbox" type="text" value="' + value + '">');
+                },
+                percent:function(value,container){
+                    new slider({
+                        start: 0,
+                        step: 1,
+                        end: 100,
+                        value: value,
+                        container: container,
+                        showValue: true,
+                        fixValue:true,
+                        style: {
+                            line_width: 1,
+                            button_width: 24,
+                            button_height: 24,
+                        },
+                    });
+                },
+                progress:function(value,container){
+                    container.html(
+                        '<div class="circle-progress" style="position:absolute;height:calc(100% - 12px);width:calc(100% - 12px);top:6px;left:6px;font-size:10px;"></div>'
+                    );
+                    new rDonatChart({
+                        thickness:2,
+                        container: container.find(".circle-progress"),
+                        value: value,
+                        fillColor: "#0165C9",
+                        emptyColor: "#0165C9",
+                        unit: "%",
+                        dashed:[3,3],
+                        text:'<i class="fas fa-play"></i>'
+                    });
+                }
+            }
+        });
+
+
+
+
+
+    </script>
+</body>
+</html>
