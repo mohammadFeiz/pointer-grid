@@ -1,7 +1,7 @@
 //r-donat-chart.js////
 function rDonatChart(config) {
     var a = {
-        state: { start: 0, end: 100, emptyColor: "#eee", fillColor: "#000", thickness: 5, unit:""},
+        state: { start: 0, end: 100, emptyColor: "#eee", fillColor: "#000", thickness: 5, unit:"",margin:0},
         clear: function () { 
             this.ctx.clearRect(0, 0, this.state.size, this.state.size); 
         },
@@ -17,11 +17,11 @@ function rDonatChart(config) {
             this.ctx.restore();
         },
         drawEmpty: function () {
-            var s = this.state,r = s.size / 2;
+            var s = this.state,r = ((s.size) / 2) - s.margin;
             this.drawArc({ x: r, y: r, r: r - s.thickness / 2, start: 0, end: 360, thickness: s.thickness, color: s.emptyColor, dashed: this.state.dashed });
         },
         drawFill: function () { 
-            var s = this.state, r = s.size / 2, angle = this.getAngle(s.value); 
+            var s = this.state, r = ((s.size) / 2) - s.margin, angle = this.getAngle(s.value);
             this.drawArc({ x: r, y: r, r: r - s.thickness / 2, start: angle, end: 0, thickness: s.thickness, color: s.fillColor }); 
         },
         getAngle: function (value) { 
@@ -34,11 +34,15 @@ function rDonatChart(config) {
         getContainer:function(){
             return typeof this.state.container === "string"?$(this.state.container):this.state.container;
         },
-        CanvasChart:function(props) {
-            function getStyle() { 
-                return 'overflow:hidden;position:absolute;width:'+props.size+'px;height:'+props.size+'px;left:0;top:0;text-align:center;line-height:' + props.size + 'px;'; 
-            }
-            return '<canvas width="' + props.size + '" height="' + props.size + '" style="' + getStyle() + '"></canvas><div style="' + getStyle() + '"></div>';
+        CanvasChart: function (props) {
+            var size = props.size - props.margin * 2;
+            var str = '<div class="r-donat-chart" style="overflow:hidden;width:' + size + 'px;height:' + size + 'px;">';
+            str += '<canvas width="' + size + '" height="' + size + '" style="overflow:hidden;position:absolute;width:100%;height:100%;left:0;top:0;"></canvas>';
+            str += '<div ';
+            str += 'style="overflow:hidden;position:absolute;width:100%;height:100%;left:0;top:0;text-align:center;line-height:' + size + 'px;">';
+            str += '</div>';
+            str += '</div>';
+            return str;
         },
         updateState: function (obj) {
             var s = this.state;
@@ -53,12 +57,12 @@ function rDonatChart(config) {
             this.updateState(obj);
             var s = this.state;
             var container = this.getContainer();
-            container.html(this.CanvasChart({ size: s.size }));
+            container.html(this.CanvasChart({ size: s.size,margin:s.margin }));
             this.ctx = container.find("canvas")[0].getContext("2d");
             this.clear(); 
             this.drawEmpty(); 
             this.drawFill();
-            container.find("div").html(s.text || s.value + s.unit);
+            container.find(".r-donat-chart div").html(s.text || s.value + s.unit);
         },
     };
     a.update(config);

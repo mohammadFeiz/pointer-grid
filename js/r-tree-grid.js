@@ -50,7 +50,7 @@ function RTreeGrid(config) {
                     var columnElement = container.find("." + column.className);
                     columnElement.append(template);
                     var cellElement = columnElement.find("[data-id="+node.id+"]");
-                    this.state.templates[column.type](this.getValue(node,column.field),cellElement);
+                    this.state.templates[column.type](node,this.getValue(node,column.field),cellElement);
                 }
             }
         },
