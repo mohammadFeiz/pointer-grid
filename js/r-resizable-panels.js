@@ -3,50 +3,49 @@ var r_resizable_panels = {
     start: null,
     init: function () {
         var groups = $(".r-resizable-group");
-        this.model = [];
         for (var i = 0; i < groups.length; i++) {
-            var element = groups.eq(i);
-            element.find(".r-splitter").remove();
-            var panels = element.children(".r-resizable-panel");
-            var cols = element.attr("cols"), rows = element.attr("rows");
-            var thickness = element.attr("data-splitter-thickness") || 5;
-            var min = element.attr("data-panels-min") || 50;
+            var group = groups.eq(i);
+            var panels = group.find(".r-resizable-panel");
+            var cols = group.attr("cols"), rows = group.attr("rows");
+            var thickness = group.attr("data-splitter-thickness") || 5;
+            var min = group.attr("data-panels-min") || 50;
+            min = parseInt(min);
+            
             thickness = parseInt(thickness);
             if (cols !== undefined) {
                 var dir = cols;
                 var oriention = "horizontal";
-                var size = element.width();
+                var size = group.width();
             }
-            else if (rows !== undefined) {
+            else if (rows !== undefined) { 
                 var dir = rows;
                 var oriention = "vertical";
-                var size = element.height();
+                var size = group.height();
             }
+            thickness = 100 * thickness / size;
             var dimentions = dir.split(",");
-            var nullCount = 0, usedWidth = (panels.length - 1) * thickness;
+            var nullCount = 0, splitters = (panels.length - 1) * thickness, usedWidth = 0;
             for (var j = 0; j < panels.length; j++) {
                 if (dimentions[j].indexOf("px") !== -1) {
                     var val = parseInt(dimentions[j])
-                    dimentions[j] = val;
-                    usedWidth += val;
+                    dimentions[j] = val * 100 / (size - splitters);
+                    usedWidth += dimentions[j];
                 }
                 else if (dimentions[j].indexOf("%") !== -1) {
-                    var val = parseInt(dimentions[j]) * (size - ((panels.length - 1) * thickness)) / 100;
-                    dimentions[j] = val;
-                    usedWidth += val;
+                    dimentions[j] = parseInt(dimentions[j]);
+                    usedWidth += dimentions[j];
                 }
                 else {
                     dimentions[j] = null;
                     nullCount++;
                 }
             }
-            var avilable = size - usedWidth;
             for (var k = 0; k < panels.length; k++) {
                 if (dimentions[k] === null) {
-                    dimentions[k] = avilable / nullCount;
+                    dimentions[k] = (100 - usedWidth) / nullCount;
                 }
             }
-            this.model.push({ element: element, panels: panels, oriention: oriention, dimentions: dimentions, thickness: thickness,min:min });
+            this.model.push({ element: group, panels: panels, oriention: oriention, dimentions: dimentions, thickness: thickness, min: min });
         }
         this.update();
     },
@@ -54,42 +53,43 @@ var r_resizable_panels = {
         for (var i = 0; i < r_resizable_panels.model.length; i++) {
             var model = r_resizable_panels.model[i];
             var thickness = model.thickness;
-            var used = 0;
+            var left = 0;
             for (var j = 0; j < model.panels.length; j++) {
                 var panel = model.panels.eq(j);
                 var dimention = model.dimentions[j];
-                if (j < model.panels.length - 1) {
-                    panel.after(this.Splitter({
-                        oriention: model.oriention,
-                        used: used,
-                        dimention: dimention,
-                        groupIndex: i,
-                        panelIndex: j,
-                        thickness: thickness,
-                    }));
-                }
-                panel.css(this.getPanelStyle({ oriention: model.oriention, dimention: dimention, used: used }));
-                used += dimention + thickness;
+                if (j === model.panels.length - 1) { break; }
+                panel.css(this.getPanelStyle({ oriention: model.oriention, dimention: dimention, left: left }));
+                left += dimention;
+                panel.after(this.Splitter({
+                    oriention: model.oriention,
+                    left: left,
+                    dimention: dimention,
+                    groupIndex: i,
+                    panelIndex: j,
+                    thickness: thickness,
+                }));
+
+                left += thickness;
             }
         }
         $(".r-splitter").unbind("mousedown", r_resizable_panels.mouseDown).bind("mousedown", r_resizable_panels.mouseDown);
-        
+
     },
     Splitter: function (obj) {
         function getStyle() {
             var str = 'position:absolute;background:#000;border:none;';
             if (obj.oriention === "horizontal") {
                 str += 'height:100%;';
-                str += 'width:' + obj.thickness + 'px;';
+                str += 'width:' + obj.thickness + '%;';
                 str += 'top:0;';
-                str += 'left:' + (obj.used + obj.dimention) + 'px;';
+                str += 'left:' + obj.left + '%;';
                 str += 'cursor:col-resize';
             }
             else {
                 str += 'width:100%;';
-                str += 'height:' + obj.thickness + 'px;';
+                str += 'height:' + obj.thickness + '%;';
                 str += 'left:0;';
-                str += 'top:' + (obj.used + obj.dimention) + 'px;';
+                str += 'top:' + obj.left + '%;';
                 str += 'cursor:row-resize';
             }
             return str;
@@ -105,10 +105,10 @@ var r_resizable_panels = {
     },
     getPanelStyle(obj) {
         if (obj.oriention === "horizontal") {
-            return { position: "absolute", width: obj.dimention + "px", height: "100%", left: obj.used + "px", top: "0px" };
+            return { position: "absolute", width: obj.dimention + "%", height: "100%", left: obj.left + "%", top: "0" };
         }
         else {
-            return { position: "absolute", height: obj.dimention + "px", width: "100%", top: obj.used + "px", left: "0px" };
+            return { position: "absolute", height: obj.dimention + "%", width: "100%", top: obj.left + "%", left: "0" };
         }
     },
     mouseUp: function () {
@@ -175,7 +175,7 @@ var r_resizable_panels = {
                 left: parseInt(afterPanel.css("left"))
             },
             oriention: element.attr("data-direction"),
-            min:model.min,
+            min: model.min,
             x: e.clientX,
             y: e.clientY
         };
