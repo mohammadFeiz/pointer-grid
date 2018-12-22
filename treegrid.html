@@ -111,17 +111,21 @@
             left: 0;
             top: 0;
             width: 100%;
-            height:500px;
+            max-height:500px;
             border: 1px solid;
         }
 
         .r-resizable-panel {
             overflow: auto;
         }
+        .r-splitter {
+            background:#000;
+            cursor:col-resize
+        }
     </style>
 </head>
 <body>
-    <div class="r-resizable-group" id="panel1" cols="50%,50%">
+    <div class="r-resizable-group" id="panel1" data-cols="400px,*">
         <div class="r-resizable-panel container">
         </div>
         <div class="r-resizable-panel">
